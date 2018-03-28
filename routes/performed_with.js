@@ -2,6 +2,8 @@ const router = require('express').Router();
 const { Client } = require('pg');
 const fs = require('fs');
 
+const { dbConfig } = require('../db.config');
+
 const RoutesHelper = require('./routes_helper');
 const authRequired = RoutesHelper.authRequired;
 const Mailer = require('./mail_helper');
@@ -26,7 +28,7 @@ let transporter = nodemailer.createTransport(Mailer.transport);
 
 // MAKE A REQUEST TO ADD A PERFORMER
 router.post('/api/perform/add', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     INSERT INTO perform_with
       (performer_1_id, performer_2_id, confirmed)
@@ -39,7 +41,7 @@ router.post('/api/perform/add', authRequired, (req, res) => {
 
 // GET PERFORMER REQUESTS FOR THE LOGGED IN USER
 router.get('/api/performers/requests', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     SELECT * FROM perform_with
       JOIN backbeatuser
@@ -58,12 +60,12 @@ router.get('/api/performers/findmatch/:performerid', authRequired, (req, res) =>
       OR (performer_1_id = $2 AND performer_2_id = $1)
   `;
   const params = [req.session.user.id, req.params.performerid];
-  const client = new Client();
+  const client = new Client(dbConfig);
   ClientHelper.connect(req, res, sql, params, client);
 })
 
 router.get('/api/performers/mutual/:userid', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   client.connect().then(() => {
     const sql = `SELECT performer_2_id FROM perform_with
       WHERE performer_1_id = $1 AND confirmed = $2
@@ -71,7 +73,7 @@ router.get('/api/performers/mutual/:userid', authRequired, (req, res) => {
     const params = [req.params.userid, true];
     return client.query(sql, params);
   }).then((results) => {
-    const newClient = new Client();
+    const newClient = new Client(dbConfig);
 
     newClient.connect().then(() => {
       const newSql = `
@@ -92,7 +94,7 @@ router.get('/api/performers/mutual/:userid', authRequired, (req, res) => {
 
 router.get('/api/performers/:status', authRequired, (req, res) => {
   const status = req.params.status === 'approved' ? true : false;
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
   SELECT * FROM perform_with
     JOIN backbeatuser
@@ -109,7 +111,7 @@ router.get('/api/performers/:status', authRequired, (req, res) => {
 })
 
 router.put('/api/performers/approve', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     UPDATE perform_with
       SET confirmed = $1
@@ -120,7 +122,7 @@ router.put('/api/performers/approve', authRequired, (req, res) => {
 })
 
 router.delete('/api/performers/reject', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     DELETE FROM perform_with
       WHERE performer_1_id = $1 AND performer_2_id = $2
@@ -131,7 +133,7 @@ router.delete('/api/performers/reject', authRequired, (req, res) => {
 
 router.delete('/api/performers/remove', authRequired, (req, res) => {
   console.log('removing performer', req.body);
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     DELETE FROM perform_with
       WHERE (performer_1_id = $1 AND performer_2_id = $2)

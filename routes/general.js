@@ -2,6 +2,8 @@ const router = require('express').Router();
 const { Client } = require('pg');
 const fs = require('fs');
 
+const { dbConfig } = require('../db.config');
+
 const ClientHelper = require('./client_helper');
 const RoutesHelper = require('./routes_helper');
 const authRequired = RoutesHelper.authRequired;
@@ -37,7 +39,7 @@ router.get('/backbeat', (req, res) => {
 })
 
 router.post('/api/activate', (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -58,7 +60,7 @@ router.post('/api/activate', (req, res) => {
 
 router.get('/myprofile/:userid', authRequired, (req, res) => {
     console.log('MY PROFILE ROUTE IS RUNNING====================================')
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `SELECT * FROM backbeatuser WHERE id = $1`;
@@ -76,7 +78,7 @@ router.get('/myprofile/:userid', authRequired, (req, res) => {
 })
 
 router.put('/myprofile/update', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
     const userInfo = req.body.userInfo;
 
     client.connect().then(() => {
@@ -100,7 +102,7 @@ router.put('/myprofile/update', authRequired, (req, res) => {
 })
 
 router.put('/user/onboarding/plus', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -124,7 +126,7 @@ router.put('/user/onboarding/plus', authRequired, (req, res) => {
 
 router.get('/api/username/:username', (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -147,7 +149,7 @@ router.get('/api/user/id/:userid', (req, res) => {
 
   console.log('GETTING USER THIS TIME', req.params);
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -168,7 +170,7 @@ router.get('/api/user/id/:userid', (req, res) => {
 
 router.get('/api/usernames/all', (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -186,7 +188,7 @@ router.get('/api/usernames/all', (req, res) => {
 })
 
 router.get('/api/instruments/all', (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
     const sql = `
         SELECT * FROM instrument
     `;
@@ -196,7 +198,7 @@ router.get('/api/instruments/all', (req, res) => {
 
 router.get('/api/profile/:username', authRequired, (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -218,7 +220,7 @@ router.get('/api/profile/:username', authRequired, (req, res) => {
 
 router.get('/api/bands/user/:userid', authRequired, (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -242,7 +244,7 @@ router.get('/api/bands/user/:userid', authRequired, (req, res) => {
 });
 
 router.get('/api/user/styles', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -264,7 +266,7 @@ router.get('/api/user/styles', authRequired, (req, res) => {
 
 router.get('/api/users/styleidone/:styleidone/styleidtwo/:styleidtwo/styleidthree/:styleidthree/city/:city/skill_level_one/:skill_level_one/skill_level_two/:skill_level_two/skill_level_three/:skill_level_three', authRequired, (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -295,7 +297,7 @@ router.get('/api/users/styleidone/:styleidone/styleidtwo/:styleidtwo/styleidthre
 
 router.get('/api/users/city/:city/skill_level_one/:skill_level_one/skill_level_two/:skill_level_two/skill_level_three/:skill_level_three', authRequired, (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -319,7 +321,7 @@ router.get('/api/users/city/:city/skill_level_one/:skill_level_one/skill_level_t
 })
 
 router.get('/api/users/instrumentid/:instrument/city/:city/skilllevel/:skillLevel/', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -344,7 +346,7 @@ router.get('/api/users/instrumentid/:instrument/city/:city/skilllevel/:skillLeve
 
 router.get('/api/user/:id', authRequired, (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -365,7 +367,7 @@ router.get('/api/user/:id', authRequired, (req, res) => {
 
 router.get('/api/users', authRequired, (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -389,7 +391,7 @@ router.post('/upload', authRequired, (req, res) => {
 
     cloudinary.uploader.upload(req.body.image, function(result) {
         console.log(result)
-        const client = new Client();
+        const client = new Client(dbConfig);
 
         client.connect().then(() => {
 
@@ -415,7 +417,7 @@ router.post('/upload', authRequired, (req, res) => {
 });
 
 router.get('/api/user/image/:userid', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -439,7 +441,7 @@ router.get('/api/user/image/:userid', authRequired, (req, res) => {
 
 router.post('/uploaddefault', authRequired, (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -469,7 +471,7 @@ router.post('/api/user/vids', authRequired, (req, res) => {
     //   req.body.video_description === null;
     // }
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -495,7 +497,7 @@ router.get('/api/user/vids/:userid', authRequired, (req, res) => {
 
     console.log('getting user vids', req.session);
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -518,7 +520,7 @@ router.get('/api/user/vids/:userid', authRequired, (req, res) => {
 
 router.post('/api/user/vidprimary/:videoid', authRequired, (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -543,7 +545,7 @@ router.post('/api/user/vidprimary/:videoid', authRequired, (req, res) => {
 
 router.get('/api/user/vidprimary/:userid', authRequired, (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -567,7 +569,7 @@ router.get('/api/user/vidprimary/:userid', authRequired, (req, res) => {
 });
 
 router.delete('/api/user/tracks', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -588,7 +590,7 @@ router.delete('/api/user/tracks', authRequired, (req, res) => {
 })
 
 router.delete('/api/user/vids', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -612,7 +614,7 @@ router.post('/api/user/tracks', authRequired, (req, res) => {
 
     console.log('ADD TRACKS', req.body);
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -636,7 +638,7 @@ router.post('/api/user/tracks', authRequired, (req, res) => {
 
 router.put('/api/user/trackprimary/', authRequired, (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -663,7 +665,7 @@ router.get('/api/user/tracks/:userid', authRequired, (req, res) => {
 
     console.log('getting user tracks for ', req.params.userid);
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -686,7 +688,7 @@ router.get('/api/user/tracks/:userid', authRequired, (req, res) => {
 
 router.get('/api/user/trackprimary/:userid', authRequired, (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -711,7 +713,7 @@ router.get('/api/user/trackprimary/:userid', authRequired, (req, res) => {
 
 router.get('/api/events/city', authRequired, (req, res) => {
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -737,7 +739,7 @@ router.get('/api/events/city', authRequired, (req, res) => {
 });
 
 router.post('/api/event/attendance', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -760,7 +762,7 @@ router.post('/api/event/attendance', authRequired, (req, res) => {
 })
 
 router.get('/api/events/attending/:userid', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -782,7 +784,7 @@ router.get('/api/events/attending/:userid', authRequired, (req, res) => {
 })
 
 router.post('/api/addsong', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -807,7 +809,7 @@ router.post('/api/addsong', authRequired, (req, res) => {
 })
 
 router.get('/api/getnews', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -829,7 +831,7 @@ router.get('/api/getnews', authRequired, (req, res) => {
 // TODO: Add the ability to create events for the Newsfeed component, including people attending events, concerts and jam sessions being created, users joining, etc.
 
 router.get('/api/event/:id/details/', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -851,7 +853,7 @@ router.get('/api/event/:id/details/', authRequired, (req, res) => {
 })
 
 router.get('/api/searchbands/:band', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -874,7 +876,7 @@ router.get('/api/searchbands/:band', authRequired, (req, res) => {
 })
 
 router.get('/api/searchusernames/:username', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -901,7 +903,7 @@ router.get('/api/searchusernames/:username', authRequired, (req, res) => {
 
 // TODO: filter instruments that already exist in a band's instrumentation
 router.get('/api/searchinstruments/:instrumentname', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
     const sql = `
         SELECT * FROM instrument
             WHERE name ILIKE $1
@@ -912,7 +914,7 @@ router.get('/api/searchinstruments/:instrumentname', authRequired, (req, res) =>
 })
 
 router.post('/api/calendar/add', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -940,7 +942,7 @@ router.get('/api/my_band_events/:type/:limit', authRequired, (req, res) => {
 
     const limit = req.params.limit === 'nolimit' ? null : req.params.limit;
 
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -965,7 +967,7 @@ router.get('/api/my_band_events/:type/:limit', authRequired, (req, res) => {
 })
 
 router.get('/api/event/:eventId', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -987,7 +989,7 @@ router.get('/api/event/:eventId', authRequired, (req, res) => {
 })
 
 router.get('/api/band_event/:eventId/details', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     console.log('EVENT ID', req.params.eventId);
 
@@ -1012,7 +1014,7 @@ router.get('/api/band_event/:eventId/details', authRequired, (req, res) => {
 })
 
 router.get('/api/gig/band/:bandid', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -1034,7 +1036,7 @@ router.get('/api/gig/band/:bandid', authRequired, (req, res) => {
 })
 
 router.post('/api/gig/band/:bandid', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -1059,7 +1061,7 @@ router.post('/api/gig/band/:bandid', authRequired, (req, res) => {
 })
 
 router.get('/api/genres', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -1078,7 +1080,7 @@ router.get('/api/genres', authRequired, (req, res) => {
 });
 
 router.post('/api/genres/add', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -1103,7 +1105,7 @@ router.post('/api/genres/add', authRequired, (req, res) => {
 })
 
 router.get('/api/instruments', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -1122,7 +1124,7 @@ router.get('/api/instruments', authRequired, (req, res) => {
 });
 
 router.get('/api/instrumentuser/:userid', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -1146,7 +1148,7 @@ router.get('/api/instrumentuser/:userid', authRequired, (req, res) => {
 })
 
 router.get('/api/instrumentbyid/:id', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = ``
@@ -1154,7 +1156,7 @@ router.get('/api/instrumentbyid/:id', authRequired, (req, res) => {
 })
 
 router.post('/api/instruments/add', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `
@@ -1179,7 +1181,7 @@ router.post('/api/instruments/add', authRequired, (req, res) => {
 });
 
 router.post('/api/instruments_seeking/add', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
         const sql = `

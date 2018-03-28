@@ -4,6 +4,7 @@ const express = require('express'),
       passport = require('passport'),
       router = express.Router();
 
+const { dgConfig } = require('../db.config');
 const User = require('../models/user');
 const nodemailer = require('nodemailer');
 // const authToken = require('./../helpers/authToken');
@@ -142,7 +143,7 @@ router.post('/signup', (req, res, next) => {
 
   const salt = bcrypt.genSaltSync(10);
   const passwordHash = bcrypt.hashSync(password, salt);
-  const client = new Client();
+  const client = new Client(dbConfig);
 
   console.log('USER SIGN UP BIO', bio);
 

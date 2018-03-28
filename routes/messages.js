@@ -2,6 +2,8 @@ const router = require('express').Router();
 const { Client } = require('pg');
 const fs = require('fs');
 
+const { dbConfig } = require('../db.config');
+
 const RoutesHelper = require('./routes_helper');
 const authRequired = RoutesHelper.authRequired;
 const Mailer = require('./mail_helper');
@@ -25,7 +27,7 @@ const User = require('../models/user');
 let transporter = nodemailer.createTransport(Mailer.transport);
 
 router.get('/messages/all', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     SELECT * FROM message
       JOIN backbeatuser ON id = sender_id
@@ -37,7 +39,7 @@ router.get('/messages/all', authRequired, (req, res) => {
 })
 
 router.get('/messages/unread', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     SELECT * FROM message
       WHERE recipient_id = $1 AND read = $2
@@ -48,7 +50,7 @@ router.get('/messages/unread', authRequired, (req, res) => {
 })
 
 router.get('/messages/:recipient_id', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     SELECT message_id, content, created_at, sender_id, recipient_id, read, sender_name, recipient_name, profile_image_url FROM message
       JOIN backbeatuser ON backbeatuser.id = sender_id
@@ -61,7 +63,7 @@ router.get('/messages/:recipient_id', authRequired, (req, res) => {
 });
 
 router.post('/message/send', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
 
   client.connect().then(() => {
     // const dateTime = moment().format("YYYY-MM-DD HH:mm:ss");
@@ -89,7 +91,7 @@ router.post('/message/send', authRequired, (req, res) => {
     client.end();
     console.log(this.newMessageId);
     const cancelEmail = setTimeout(() => {
-      const mailClient = new Client();
+      const mailClient = new Client(dbConfig);
       mailClient.connect().then(() => {
         const sql = `
           SELECT * FROM message
@@ -156,7 +158,7 @@ router.post('/message/send', authRequired, (req, res) => {
 })
 
 router.put('/message/:id/markasunread', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     UPDATE message
       SET
@@ -169,7 +171,7 @@ router.put('/message/:id/markasunread', authRequired, (req, res) => {
 })
 
 router.put('/message/:id/markasread', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     UPDATE message
       SET

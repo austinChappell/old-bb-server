@@ -2,6 +2,8 @@ const router = require('express').Router();
 const { Client } = require('pg');
 const fs = require('fs');
 
+const { dbConfig } = require('../db.config');
+
 const RoutesHelper = require('./routes_helper');
 const authRequired = RoutesHelper.authRequired;
 const Mailer = require('./mail_helper');
@@ -25,14 +27,14 @@ const User = require('../models/user');
 let transporter = nodemailer.createTransport(Mailer.transport);
 
 router.get('/api/skills', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `SELECT * FROM skills`;
   const params = null;
   ClientHelper.connect(req, res, sql, params, client);
 });
 
 router.post('/api/skills', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     INSERT INTO skill_user
       (skill_id, user_id)
@@ -43,7 +45,7 @@ router.post('/api/skills', authRequired, (req, res) => {
 });
 
 router.delete('/api/skills', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     DELETE FROM skill_user
       WHERE user_id = $1
@@ -53,7 +55,7 @@ router.delete('/api/skills', authRequired, (req, res) => {
 })
 
 router.get('/api/skills/show/:userid', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     SELECT * FROM skill_user
       JOIN skills ON skills.skill_id = skill_user.skill_id
@@ -64,7 +66,7 @@ router.get('/api/skills/show/:userid', authRequired, (req, res) => {
 });
 
 router.post('/api/skills/endorse', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     INSERT INTO endorsements
       (skill_id, user_id, endorser_id)
@@ -76,7 +78,7 @@ router.post('/api/skills/endorse', authRequired, (req, res) => {
 });
 
 router.delete('/api/skills/endorse', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     DELETE FROM endorsements
       WHERE (skill_id = $1 AND user_id = $2) AND endorser_id = $3
@@ -87,7 +89,7 @@ router.delete('/api/skills/endorse', authRequired, (req, res) => {
 });
 
 router.get('/api/skills/endorsements/:userid', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     SELECT * FROM endorsements
 	    WHERE user_id = $1

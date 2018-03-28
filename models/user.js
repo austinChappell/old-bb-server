@@ -1,12 +1,14 @@
 const bcrypt = require('bcryptjs'),
       { Client } = require('pg');
 
+const { dbConfig } = require('../db.config');
+
 const checkPassword = function(password, passwordHash) {
   return bcrypt.compareSync(password, passwordHash);
 }
 
 const checkUser = function(username, password, done) {
-  const client = new Client();
+  const client = new Client(dbConfig);
 
   client.connect().then(() => {
     const sql = 'SELECT * FROM backbeatuser WHERE username = $1';

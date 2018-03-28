@@ -1,6 +1,8 @@
 const LocalStrategy = require('passport-local').Strategy;
 const { Client } = require('pg');
 
+const { dbConfig } = require('./db.config');
+
 const User = require('./models/user');
 
 function configure(passport) {
@@ -26,7 +28,7 @@ function configure(passport) {
   passport.deserializeUser(function(user, done) {
     // console.log('deserializeUser', user);
     const userId = user.id;
-    const client = new Client();
+    const client = new Client(dbConfig);
 
     client.connect().then(() => {
       const sql = 'SELECT * FROM backbeatuser WHERE id = $1';

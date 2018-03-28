@@ -2,6 +2,8 @@ const router = require('express').Router();
 const { Client } = require('pg');
 const fs = require('fs');
 
+const { dbConfig } = require('../db.config');
+
 const RoutesHelper = require('./routes_helper');
 const authRequired = RoutesHelper.authRequired;
 const Mailer = require('./mail_helper');
@@ -25,7 +27,7 @@ const User = require('../models/user');
 let transporter = nodemailer.createTransport(Mailer.transport);
 
 router.post('/band/create', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     INSERT INTO band
       (band_name, band_genre, band_skill_level, band_city, band_admin_id, band_description)
@@ -37,7 +39,7 @@ router.post('/band/create', authRequired, (req, res) => {
 });
 
 router.put('/band/edit/:bandId', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     UPDATE band
       SET
@@ -54,7 +56,7 @@ router.put('/band/edit/:bandId', authRequired, (req, res) => {
 })
 
 router.post('/editband/:bandId/addmember/:memberId', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     INSERT INTO band_user
       (band_id, user_id)
@@ -66,7 +68,7 @@ router.post('/editband/:bandId/addmember/:memberId', authRequired, (req, res) =>
 });
 
 router.delete('/editband/:bandId/removemember/:memberId', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     DELETE FROM band_user
       WHERE band_id = $1 AND user_id = $2
@@ -77,7 +79,7 @@ router.delete('/editband/:bandId/removemember/:memberId', authRequired, (req, re
 });
 
 router.put('/editband/:bandId/addmember/:memberId', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     UPDATE band_user
       SET
@@ -90,7 +92,7 @@ router.put('/editband/:bandId/addmember/:memberId', authRequired, (req, res) => 
 });
 
 router.post('/editband/:bandId/addinstrument/:instrumentId', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
         INSERT INTO band_instruments
             (band_id, instrument_id)
@@ -102,7 +104,7 @@ router.post('/editband/:bandId/addinstrument/:instrumentId', authRequired, (req,
 });
 
 router.delete('/editband/:bandId/removeinstrument/all', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
   DELETE FROM band_instruments
   WHERE band_id = $1
@@ -113,7 +115,7 @@ router.delete('/editband/:bandId/removeinstrument/all', authRequired, (req, res)
 })
 
 router.delete('/editband/:bandId/removeinstrument/:instrumentId', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     DELETE FROM band_instruments
       WHERE band_id = $1 AND instrument_id = $2
@@ -124,7 +126,7 @@ router.delete('/editband/:bandId/removeinstrument/:instrumentId', authRequired, 
 });
 
 router.delete('/band/delete/:bandId', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
 
   client.connect().then(() => {
     const sql = `
@@ -156,7 +158,7 @@ router.delete('/band/delete/:bandId', authRequired, (req, res) => {
 })
 
 router.get('/api/band/:bandId/instruments', authRequired, (req, res) => {
-    const client = new Client();
+    const client = new Client(dbConfig);
     const sql = `
         SELECT * FROM band_instruments
             JOIN instrument
@@ -169,7 +171,7 @@ router.get('/api/band/:bandId/instruments', authRequired, (req, res) => {
 })
 
 router.get('/api/band/:bandId', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
   SELECT *
     FROM band
@@ -182,7 +184,7 @@ router.get('/api/band/:bandId', authRequired, (req, res) => {
 });
 
 router.get('/api/band/:bandId/messages', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     SELECT * FROM band_messages
       JOIN backbeatuser ON band_messages.sender_id = backbeatuser.id
@@ -211,7 +213,7 @@ router.post('/band/upload/pdf/:bandid', authRequired, (req, res) => {
 
   cloudinary.uploader.upload('uploads/band_chart.pdf', function (result) {
     console.log('results', result);
-    const client = new Client();
+    const client = new Client(dbConfig);
     const sql = `
         INSERT INTO band_charts
             (band_id, chart_title, url, instrument_id)
@@ -227,7 +229,7 @@ router.post('/band/upload/pdf/:bandid', authRequired, (req, res) => {
 router.get('/api/band/charts/pdf/:bandid', authRequired, (req, res) => {
     console.log('GETTING BAND CHARTS=======================================================================================================================================================');
     // TODO: add code to check that logged in user is a member of this band
-    const client = new Client();
+    const client = new Client(dbConfig);
     const sql = `
         SELECT * FROM band_charts
             WHERE band_id = $1
@@ -238,7 +240,7 @@ router.get('/api/band/charts/pdf/:bandid', authRequired, (req, res) => {
 
 router.put('/api/band/member/instrument/edit', authRequired, (req, res) => {
     console.log('UPDATE INSTRUMENT ROUTE RUNNING', req.body);
-    const client = new Client();
+    const client = new Client(dbConfig);
     const sql = `
     UPDATE band_user
         SET instrument_id = $1
@@ -250,7 +252,7 @@ router.put('/api/band/member/instrument/edit', authRequired, (req, res) => {
 })
 
 router.post('/api/band/message/new', authRequired, (req, res) => {
-  const client = new Client();
+  const client = new Client(dbConfig);
   const sql = `
     INSERT INTO band_messages
       (band_id, created_at, content, sender_id)
