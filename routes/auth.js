@@ -4,7 +4,7 @@ const express = require('express'),
       passport = require('passport'),
       router = express.Router();
 
-const { dgConfig } = require('../db.config');
+const { dbConfig } = require('../db.config');
 const User = require('../models/user');
 const nodemailer = require('nodemailer');
 // const authToken = require('./../helpers/authToken');
