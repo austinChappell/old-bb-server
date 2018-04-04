@@ -82,6 +82,9 @@ router.post('/message/send', authRequired, (req, res) => {
 
     return client.query(sql, params);
   }).then((results) => {
+    console.log('=============================')
+    console.log('THE RESULTS', results)
+    console.log('=============================')
     this.newMessageId = results.rows[0].message_id;
 
     res.json(results);
